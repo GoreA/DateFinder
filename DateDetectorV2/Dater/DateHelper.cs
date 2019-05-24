@@ -48,7 +48,7 @@ namespace DateDetectorV2.Dater
         /// <param name="dayArray">Day array.</param>
         /// <param name="monthArray">Month array.</param>
         /// <param name="yearArray">Year array.</param>
-        public static int GetYearDistance(List<char> dayArray, List<char> monthArray, List<char> yearArray) 
+        public static int GetYearDistance(List<char> dayArray, List<char> monthArray, List<char> yearArray)
         {
             int distance = 0;
             if (yearArray.Count > 0)
@@ -83,7 +83,7 @@ namespace DateDetectorV2.Dater
         /// <returns>The month distance.</returns>
         /// <param name="dayArray">Day array.</param>
         /// <param name="monthArray">Month array.</param>
-        public static int GetMonthDistance(List<char> dayArray, List<char> monthArray) 
+        public static int GetMonthDistance(List<char> dayArray, List<char> monthArray)
         {
             int distance = 0;
             switch (monthArray[0])
@@ -120,7 +120,7 @@ namespace DateDetectorV2.Dater
         /// </summary>
         /// <returns>The day distance.</returns>
         /// <param name="dayArray">Day array.</param>
-        public static int GetDayDistance(List<char> dayArray) 
+        public static int GetDayDistance(List<char> dayArray)
         {
             int distance = 0;
             switch (dayArray[0])
@@ -215,7 +215,8 @@ namespace DateDetectorV2.Dater
         /// <returns>0 if date is valid, 1 otherwise.</returns>
         /// <param name="dayArray">Day array.</param>
         /// <param name="monthArray">Month array.</param>
-        public static int GetDayMonthDateValidationDistance(List<char> dayArray, List<char> monthArray) {
+        public static int GetDayMonthDateValidationDistance(List<char> dayArray, List<char> monthArray)
+        {
             string date = DateHelper.BuildDate(dayArray, monthArray);
             bool isDateValid = DateHelper.ValidateDate(date + ".2000", "dd.mm.yyyy");
             if (!isDateValid) return 1;
@@ -253,7 +254,7 @@ namespace DateDetectorV2.Dater
         public static string BuildDate(List<char> dayArray, List<char> monthArray, List<char> yearArray)
         {
             string date = BuildDate(dayArray, monthArray);
-            string year = "";
+            string year = string.Empty;
             foreach (char c in yearArray)
             {
                 year = year + c;
@@ -274,7 +275,7 @@ namespace DateDetectorV2.Dater
         public static string BuildLongDate(List<char> dayArray, List<char> monthArray, List<char> yearArray)
         {
             string date = BuildLongDate(dayArray, monthArray);
-            string year = "";
+            string year = string.Empty;
             foreach (char c in yearArray)
             {
                 year = year + c;
@@ -293,15 +294,15 @@ namespace DateDetectorV2.Dater
         /// <param name="monthArray">Month array.</param>
         public static string BuildDate(List<char> dayArray, List<char> monthArray)
         {
-            string date = "";
-            string day = "";
+            string date = string.Empty;
+            string day = string.Empty;
             foreach (char c in dayArray)
             {
                 day = day + c;
             }
             day = day.PadLeft(2, '0');
             date = date + day + ".";
-            string month = "";
+            string month = string.Empty;
             foreach (char c in monthArray)
             {
                 month = month + c;
@@ -319,15 +320,15 @@ namespace DateDetectorV2.Dater
         /// <param name="monthArray">Month array.</param>
         public static string BuildLongDate(List<char> dayArray, List<char> monthArray)
         {
-            string date = "";
-            string day = "";
+            string date = string.Empty;
+            string day = string.Empty;
             foreach (char c in dayArray)
             {
                 day = day + c;
             }
             day = day.PadLeft(2, '0');
             date = date + day + " ";
-            string month = "";
+            string month = string.Empty;
             foreach (char c in monthArray)
             {
                 month = month + c;

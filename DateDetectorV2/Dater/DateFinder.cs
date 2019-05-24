@@ -17,10 +17,33 @@ namespace DateDetectorV2.Dater
 
         public DateFinder(string stringToScan, string pathForFormats, string pathForMonths, int distance)
         {
-            this._stringToScan = stringToScan;
-            this._pathToFormats = pathForFormats;
-            this._distance = distance;
-            this._monthsDictionary = DateHelper.GetLengthMonthsDictionary(pathForMonths);
+            if (string.IsNullOrEmpty(stringToScan))
+            {
+                throw new System.ArgumentException("StringToScan parameter cannot be null or empty", stringToScan);
+            }
+            else
+                _stringToScan = stringToScan;
+
+            if (string.IsNullOrEmpty(pathForFormats))
+            {
+                throw new System.ArgumentException("PathToFormats parameter cannot be null or empty", pathForFormats);
+            }
+            else
+                _pathToFormats = pathForFormats;
+
+            if (string.IsNullOrEmpty(pathForMonths))
+            {
+                throw new System.ArgumentException("PathForMonths parameter cannot be null or empty", pathForMonths);
+            }
+            else
+                _monthsDictionary = DateHelper.GetLengthMonthsDictionary(pathForMonths);
+
+            if (distance < 0)
+            {
+                throw new System.ArgumentException("Distance must be equal or greater than 0");
+            }
+            else
+                _distance = distance;
         }
 
         /// <summary>
@@ -40,7 +63,8 @@ namespace DateDetectorV2.Dater
         private List<DateResult> GetDateResultListFromWordRegEx(Dictionary<string, HashSet<string>> wordRegexes)
         {
             List<DateResult> dateResults = new List<DateResult>();
-            foreach( KeyValuePair<string, HashSet<string>> wordRegexFormats in wordRegexes){
+            foreach (KeyValuePair<string, HashSet<string>> wordRegexFormats in wordRegexes)
+            {
                 dateResults.AddRange(GetDateResults(wordRegexFormats.Key, wordRegexFormats.Value));
             }
             return dateResults;
@@ -53,12 +77,12 @@ namespace DateDetectorV2.Dater
             MatchCollection matchCollection = regex.Matches(_stringToScan);
             foreach (Match match in matchCollection)
             {
-                foreach(string format in formats) 
+                foreach (string format in formats)
                 {
                     DateResult dateResult = GetDateResultFromWordFormats(match, format);
-                    if(dateResult != null) 
+                    if (dateResult != null)
                     {
-                        dateResults = ExtendDateResults(dateResults, dateResult); 
+                        dateResults = ExtendDateResults(dateResults, dateResult);
                     }
                 }
             }
@@ -88,7 +112,8 @@ namespace DateDetectorV2.Dater
                 {
                     distance = GetDistanceFromFormatDMMM(value, format);
                 }
-                else {
+                else
+                {
                     distance = GetDistanceFromFormatDDMMM(value, format);
                 }
             }
@@ -98,20 +123,24 @@ namespace DateDetectorV2.Dater
                 // formats with 1 d -> d.m.yy
                 if (format.ToLower().Contains("d") && !format.ToLower().Contains("dd"))
                 {
-                    if(format.ToLower().Contains("m") && !format.ToLower().Contains("mm")) {
+                    if (format.ToLower().Contains("m") && !format.ToLower().Contains("mm"))
+                    {
                         distance = GetDistanceFromFormatDM(value, format);
                     }
-                    else {
+                    else
+                    {
                         distance = GetDistanceFromFormatDMM(value, format);
                     }
                 }
                 // formats with 2 d -> dd.mm.yy
                 else
                 {
-                    if (format.ToLower().Contains("m") && !format.ToLower().Contains("mm")) {
+                    if (format.ToLower().Contains("m") && !format.ToLower().Contains("mm"))
+                    {
                         distance = GetDistanceFromFormatDDM(value, format);
                     }
-                    else {
+                    else
+                    {
                         distance = GetDistanceFromFormatDDMM(value, format);
                     }
                 }
@@ -128,7 +157,7 @@ namespace DateDetectorV2.Dater
             List<char> monthArray = new List<char>();
             List<char> dayArray = new List<char>();
             List<char> yearArray = new List<char>();
-            (distance, dayArray, monthArray, yearArray) = DateHelper.GetSymbolDistanceDayMonthYearArrays(formatArray, valueArray); 
+            (distance, dayArray, monthArray, yearArray) = DateHelper.GetSymbolDistanceDayMonthYearArrays(formatArray, valueArray);
             distance += DateHelper.GetDayDistance(dayArray);
             distance += DateHelper.GetMonthDistance(dayArray, monthArray);
             distance += DateHelper.GetYearDistance(dayArray, monthArray, yearArray);
@@ -226,7 +255,7 @@ namespace DateDetectorV2.Dater
                 List<char> dayArray = new List<char>();
                 List<char> yearArray = new List<char>();
                 (distance, dayArray, monthArray, yearArray) = DateHelper.GetSymbolDistanceDayMonthYearArrays(formatArray, valueArray);
-                distance += !DateHelper.DIGITS.Contains(dayArray[0].ToString()) || dayArray[0] == '0' ? 1 : 0; 
+                distance += !DateHelper.DIGITS.Contains(dayArray[0].ToString()) || dayArray[0] == '0' ? 1 : 0;
                 distance += !DateHelper.DIGITS.Contains(monthArray[0].ToString()) || monthArray[0] == '0' ? 1 : 0;
                 if (distance == 0)
                     distance += DateHelper.GetDayMonthDateValidationDistance(dayArray, monthArray);
@@ -327,7 +356,8 @@ namespace DateDetectorV2.Dater
             }
 
             else distanceDMMM = Int16.MaxValue;
-            if(distanceDMMM > 0) {
+            if (distanceDMMM > 0)
+            {
                 Regex dRegex = new Regex("d");
                 Match dMatch = dRegex.Match(format);
                 string newFormatDDMMM = format.Insert(dMatch.Index + 1, "d");
@@ -354,11 +384,11 @@ namespace DateDetectorV2.Dater
             if (dateResults.Contains(dateResult))
             {
                 DateResult primaryDt = dateResults.Find(obj => obj.Equals(dateResult));
-                foreach(KeyValuePair<string, int> kvp in dateResult.Format) 
+                foreach (KeyValuePair<string, int> kvp in dateResult.Format)
                 {
                     if (kvp.Value == 0)
                         primaryDt.Status = Status.OK;
-                    primaryDt.Format.Add(kvp.Key, kvp.Value); 
+                    primaryDt.Format.Add(kvp.Key, kvp.Value);
                 }
             }
             else
@@ -371,8 +401,9 @@ namespace DateDetectorV2.Dater
         private Dictionary<string, HashSet<string>> GetWordRegexes(Dictionary<int, HashSet<string>> lengthWithCorrespondingFormats)
         {
             Dictionary<string, HashSet<string>> regexFormats = new Dictionary<string, HashSet<string>>();
-            foreach(int length in lengthWithCorrespondingFormats.Keys) {
-                string regex = "[\\s\\[\\{\\n\\/\\\"](.{" + length + "})[\\s\\]\\}\\n\\/\\\"]";
+            foreach (int length in lengthWithCorrespondingFormats.Keys)
+            {
+                string regex = $"[\\s\\[{{\\n\\/\\\"](.{{{length}}})[\\s\\]}}\\n\\/\\\"]";
                 HashSet<string> formats;
                 lengthWithCorrespondingFormats.TryGetValue(length, out formats);
                 regexFormats.Add(regex, formats);

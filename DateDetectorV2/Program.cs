@@ -29,6 +29,7 @@ namespace DateDetectorV2
 
                 long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 DateFinder df = new DateFinder(sb.ToString(), pathToFormats, pathForMonths, 1);
+                // Main method
                 Console.WriteLine(df.DetectDate());
                 long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 Console.WriteLine((end - start) / 1000);
