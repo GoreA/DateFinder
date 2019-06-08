@@ -13,7 +13,11 @@ namespace DateDetectorV2.Dater
         [JsonConverter(typeof(StringEnumConverter))]
         public Status Status { get; set; }
 
-        public string Value { get; set; }
+        public string OriginalValue { get; set; }
+
+        public string SupposedValue { get; set; }
+
+        public float Accuracy { get; set; }
 
         public int StartIndex { get; set; }
 
@@ -30,7 +34,7 @@ namespace DateDetectorV2.Dater
             else
             {
                 DateResult dr = (DateResult)obj;
-                return (Value.Equals(dr.Value)
+                return (OriginalValue.Equals(dr.OriginalValue)
                     && StartIndex == dr.StartIndex
                     && EndIndex == dr.EndIndex);
             }

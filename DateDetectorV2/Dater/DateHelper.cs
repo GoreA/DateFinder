@@ -48,33 +48,53 @@ namespace DateDetectorV2.Dater
         /// <param name="dayArray">Day array.</param>
         /// <param name="monthArray">Month array.</param>
         /// <param name="yearArray">Year array.</param>
-        public static int GetYearDistance(List<char> dayArray, List<char> monthArray, List<char> yearArray)
+        public static (int, string) GetYearDistance(List<char> dayArray, List<char> monthArray, List<char> yearArray, int cumulativeDistance)
         {
             int distance = 0;
+            List<char> yearWithDash = new List<char>();
             if (yearArray.Count > 0)
             {
                 if (yearArray.Count == 2)
                 {
-                    if (!DIGITS.Contains(yearArray[0].ToString())) distance++;
-                    if (!DIGITS.Contains(yearArray[1].ToString())) distance++;
+                    yearWithDash.Add(yearArray[0]);
+                    if (!DIGITS.Contains(yearArray[0].ToString()))
+                    {
+                        distance++;
+                        yearWithDash.Add('_');
+                    }
+                    yearWithDash.Add(yearArray[1]);
+                    if (!DIGITS.Contains(yearArray[1].ToString()))
+                    {
+                        distance++;
+                        yearWithDash.Add('_');
+                    }
                 }
                 else
                 {
-                    if (!DIGITS.Contains(yearArray[0].ToString()) || yearArray[0] == '0') distance++;
+                    yearWithDash.Add(yearArray[0]);
+                    if (!DIGITS.Contains(yearArray[0].ToString()) || yearArray[0] == '0')
+                    {
+                        distance++;
+                        yearWithDash.Add('_');
+                    }
                     for (int i = 1; i < yearArray.Count; i++)
                     {
-                        if (!DIGITS.Contains(yearArray[i].ToString())) distance++;
+                        yearWithDash.Add(yearArray[i]);
+                        if (!DIGITS.Contains(yearArray[i].ToString()))
+                        {
+                            distance++;
+                            yearWithDash.Add('_');
+                        }
                     }
                 }
-                if (distance == 0)
+                if (distance + cumulativeDistance == 0)
                 {
                     string date = BuildDate(dayArray, monthArray, yearArray);
                     bool isDateValid = ValidateDate(date, "dd.mm.yyyy");
                     if (!isDateValid) distance++;
                 }
             }
-            return distance;
-
+            return (distance, new string(yearWithDash.ToArray()));
         }
 
         /// <summary>
@@ -83,36 +103,50 @@ namespace DateDetectorV2.Dater
         /// <returns>The month distance.</returns>
         /// <param name="dayArray">Day array.</param>
         /// <param name="monthArray">Month array.</param>
-        public static int GetMonthDistance(List<char> dayArray, List<char> monthArray)
+        public static (int, string) GetMonthDistance(List<char> dayArray, List<char> monthArray, int cumulativeDistance)
         {
             int distance = 0;
+            List<char> monthWithDash = new List<char>();
             switch (monthArray[0])
             {
                 case '0':
+                    monthWithDash.Add(monthArray[0]);
+                    monthWithDash.Add(monthArray[1]);
                     if (!DIGITS.Contains(monthArray[1].ToString()) || monthArray[1] == '0')
                     {
                         distance++;
+                        monthWithDash.Add('_');
                     }
                     break;
                 case '1':
+                    monthWithDash.Add(monthArray[0]);
+                    monthWithDash.Add(monthArray[1]);
                     if (monthArray[1] != '0' && monthArray[1] != '1' && monthArray[1] != '2')
                     {
                         distance++;
+                        monthWithDash.Add('_');
                     }
                     break;
                 default:
+                    monthWithDash.Add(monthArray[0]);
+                    monthWithDash.Add('_');
                     distance++;
-                    distance += !DIGITS.Contains(monthArray[1].ToString()) ? 1 : 0;
+                    monthWithDash.Add(monthArray[1]);
+                    if (!DIGITS.Contains(monthArray[1].ToString()))
+                    {
+                        distance++;
+                        monthWithDash.Add('_');
+                    }
                     break;
             }
 
-            if (distance == 0)
+            if (distance + cumulativeDistance == 0)
             {
                 string date = DateHelper.BuildDate(dayArray, monthArray);
                 bool isDateValid = DateHelper.ValidateDate(date + ".2000", "dd.mm.yyyy");
                 if (!isDateValid) distance++;
             }
-            return distance;
+            return (distance, new string(monthWithDash.ToArray()));
         }
 
         /// <summary>
@@ -120,36 +154,53 @@ namespace DateDetectorV2.Dater
         /// </summary>
         /// <returns>The day distance.</returns>
         /// <param name="dayArray">Day array.</param>
-        public static int GetDayDistance(List<char> dayArray)
+        public static (int, string) GetDayDistance(List<char> dayArray)
         {
             int distance = 0;
+            List<char> dayWithDash = new List<char>();
             switch (dayArray[0])
             {
                 case '0':
+                    dayWithDash.Add(dayArray[0]);
+                    dayWithDash.Add(dayArray[1]);
                     if (!DIGITS.Contains(dayArray[1].ToString()) || dayArray[1] == '0')
                     {
+                        dayWithDash.Add('_');
                         distance++;
                     }
                     break;
                 case '1':
                 case '2':
+                    dayWithDash.Add(dayArray[0]);
+                    dayWithDash.Add(dayArray[1]);
                     if (!DIGITS.Contains(dayArray[1].ToString()))
                     {
+                        dayWithDash.Add('_');
                         distance++;
                     }
                     break;
                 case '3':
+                    dayWithDash.Add(dayArray[0]);
+                    dayWithDash.Add(dayArray[1]);
                     if (dayArray[1] != '0' && dayArray[1] != '1')
                     {
+                        dayWithDash.Add('_');
                         distance++;
                     }
                     break;
                 default:
+                    dayWithDash.Add(dayArray[0]);
+                    dayWithDash.Add('_');
                     distance++;
-                    distance += !DIGITS.Contains(dayArray[1].ToString()) ? 1 : 0;
+                    dayWithDash.Add(dayArray[1]);
+                    if (!DIGITS.Contains(dayArray[1].ToString()))
+                    {
+                        dayWithDash.Add('_');
+                        distance++;
+                    }
                     break;
             }
-            return distance;
+            return (distance, new string(dayWithDash.ToArray()));
         }
 
         /// <summary>
@@ -241,7 +292,8 @@ namespace DateDetectorV2.Dater
         /// <param name="date">Date.</param>
         public static bool ValidateLongDate(string date)
         {
-            return DateTime.TryParse(date, out _);
+            return DateTime.TryParseExact(date, "dd MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _) ||
+                DateTime.TryParseExact(date, "dd MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
         }
 
         /// <summary>
@@ -336,6 +388,5 @@ namespace DateDetectorV2.Dater
             date = date + month;
             return date;
         }
-
     }
 }
