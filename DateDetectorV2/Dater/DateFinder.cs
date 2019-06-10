@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
@@ -13,10 +12,12 @@ namespace DateDetectorV2.Dater
     {
         private string _stringToScan;
         private string _pathToFormats;
+        private string _pathToMonths;
         private int _distance;
+        private string _outputFormat;
         private Dictionary<int, HashSet<string>> _monthsDictionary;
 
-        public DateFinder(string stringToScan, string pathForFormats, string pathForMonths, int distance)
+        public DateFinder(string stringToScan, string pathForFormats, string pathToMonths, int distance, string outputFormat)
         {
             if (string.IsNullOrEmpty(stringToScan))
             {
@@ -32,12 +33,15 @@ namespace DateDetectorV2.Dater
             else
                 _pathToFormats = pathForFormats;
 
-            if (string.IsNullOrEmpty(pathForMonths))
+            if (string.IsNullOrEmpty(pathToMonths))
             {
-                throw new System.ArgumentException("PathForMonths parameter cannot be null or empty", pathForMonths);
+                throw new System.ArgumentException("PathForMonths parameter cannot be null or empty", pathToMonths);
             }
             else
-                _monthsDictionary = DateHelper.GetLengthMonthsDictionary(pathForMonths);
+            {
+                _monthsDictionary = DateHelper.GetLengthMonthsDictionary(pathToMonths);
+                _pathToMonths = pathToMonths;
+            }
 
             if (distance < 0)
             {
@@ -45,6 +49,13 @@ namespace DateDetectorV2.Dater
             }
             else
                 _distance = distance;
+
+            if (string.IsNullOrEmpty(outputFormat))
+            {
+                throw new System.ArgumentException("OutputFormat parameter cannot be null or empty");
+            }
+            else
+                _outputFormat = outputFormat;
         }
 
         /// <summary>
@@ -505,7 +516,8 @@ namespace DateDetectorV2.Dater
             DateResult dateResult = new DateResult();
             dateResult.Status = distance > 0 ? Status.Error : Status.OK;
             dateResult.OriginalValue = match.Value.Substring(1, (match.Value.Length - 2));
-            (dateResult.SupposedValue, dateResult.Accuracy) = DateIdentificator.GetSupposedValue(valueToDetec);
+            DateIdentificator dateIdentificator = new DateIdentificator(_pathToMonths, _outputFormat);
+            (dateResult.SupposedValue, dateResult.Accuracy) = dateIdentificator.GetSupposedValue(valueToDetec);
             dateResult.StartIndex = match.Index + 1;
             dateResult.EndIndex = match.Index + match.Length - 2;
             dateResult.Format.Add(format, distance);

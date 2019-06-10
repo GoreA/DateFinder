@@ -12,9 +12,42 @@ namespace DateDetectorV2.Dater
 {
     public class DateIdentificator
     {
-        public const string DIGITS_LETTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        public const string DIGITS = "0123456789";
+        public string LETTERS = string.Empty;
+        private string _outputFormat;
 
-        internal static (string, float) GetSupposedValue(List<string> valueToDetec)
+        public DateIdentificator (string pathForMonths, string outputFormat) 
+        {
+            if (string.IsNullOrEmpty(pathForMonths))
+            {
+                throw new System.ArgumentException("PathForMonths parameter cannot be null or empty", pathForMonths);
+            }
+            else
+                LETTERS = GetLettersFromDeclaredMonths(pathForMonths);
+
+            if (string.IsNullOrEmpty(outputFormat))
+            {
+                throw new System.ArgumentException("OutputFormat parameter cannot be null or empty");
+            }
+            else
+                _outputFormat = outputFormat;
+        }
+
+        private string GetLettersFromDeclaredMonths(string path)
+        {
+            HashSet<char> chars = new HashSet<char>();
+            using (StreamReader reader = new StreamReader(path))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    chars.UnionWith(line.ToCharArray());
+                }
+            }
+            return string.Join("", chars);
+        }
+
+        internal (string, float) GetSupposedValue(List<string> valueToDetec)
         {
             if (string.IsNullOrEmpty(valueToDetec[2]))
             {
@@ -54,7 +87,7 @@ namespace DateDetectorV2.Dater
                         }
                         else
                         {
-                            possibleLetters.Add(new HashSet<string>(DIGITS_LETTERS.Select(x => x.ToString()).ToList()));
+                            possibleLetters = CalculatePossibleLetters(possibleLetters, month, i);
                             leetUnderscores--;
                             simpleUnderscores++;
                         }
@@ -84,7 +117,7 @@ namespace DateDetectorV2.Dater
             return (currentDate, accuracy);
         }
 
-        private static (string currentDate, float accuracy) GetSupposedValueWithoutLeet(List<string> valueToDetec)
+        private (string currentDate, float accuracy) GetSupposedValueWithoutLeet(List<string> valueToDetec)
         {
             float accuracy = 0;
             List<string> months = valueToDetec[1].Split(',').ToList();
@@ -100,7 +133,7 @@ namespace DateDetectorV2.Dater
                     MatchCollection matchCollection = regex.Matches(valueToDetec[i]);
                     foreach (Match match in matchCollection)
                     {
-                        possibleLetters.Add(new HashSet<string>(DIGITS_LETTERS.Select(x => x.ToString()).ToList()));
+                        possibleLetters = CalculatePossibleLetters(possibleLetters, month, i);
                     }
                 }
 
@@ -124,6 +157,17 @@ namespace DateDetectorV2.Dater
                 }
             }
             return (DateTime.Now.ToString("dd MM yyyy"), 0f);
+        }
+
+        private List<ISet<string>> CalculatePossibleLetters(List<ISet<string>> possibleLetters, string month, int i)
+        {
+            string monthWithoutDash = month.Replace("_", "");
+            if (i == 1 && monthWithoutDash.Count() > 2) 
+                // in this case we have a month representation in alphabetic format so in this case we do not need to includ digits too
+                possibleLetters.Add(new HashSet<string>(LETTERS.Select(x => x.ToString()).ToList()));
+            else
+                possibleLetters.Add(new HashSet<string>(DIGITS.Select(x => x.ToString()).ToList()));
+            return possibleLetters;
         }
 
         private static List<string> GetAllCombinations(List<ISet<string>> possibleLetters, List<string> combos = null)
@@ -191,6 +235,7 @@ namespace DateDetectorV2.Dater
                 detectedDate[1] = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(currentDate.Split(' ')[1].ToLower());
                 currentDate = string.Join(" ", detectedDate);
             }
+
             return currentDate;
         }
     }
