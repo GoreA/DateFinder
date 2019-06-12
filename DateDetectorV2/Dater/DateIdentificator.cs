@@ -57,10 +57,12 @@ namespace DateDetectorV2.Dater
 
             string currentDate = string.Join(" ", valueToDetec);
             if (!currentDate.Contains("_")) {
-                return (currentDate, 1f);
+                return (PrepareDate(currentDate), 1f);
             }
 
             float accuracy = 0;
+            valueToDetec = valueToDetec.Select(val => val.Replace(',', 'z')).ToList();
+
             var currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var pathToLeet = Path.Combine(currentDirectory, @"Resources/Leet.txt");
             Dictionary<string, HashSet<string>> leetDict = Leet.GetLengthMonthsDictionary(pathToLeet);
@@ -93,7 +95,6 @@ namespace DateDetectorV2.Dater
                         }
                     }
                 }
-
                 List<string> combos = GetAllCombinations(possibleLetters);
                 Regex repareRegex = new Regex(@"._");
                 string[] matchesPerReparedDate = repareRegex.Matches(reparedDate).Cast<Match>()
@@ -156,7 +157,7 @@ namespace DateDetectorV2.Dater
                     }
                 }
             }
-            return (DateTime.Now.ToString("dd MM yyyy"), 0f);
+            return (DateTime.Now.ToString(_outputFormat, CultureInfo.InvariantCulture), 0f);
         }
 
         private List<ISet<string>> CalculatePossibleLetters(List<ISet<string>> possibleLetters, string month, int i)
@@ -221,22 +222,68 @@ namespace DateDetectorV2.Dater
                 DateHelper.ValidateLongDate(date);
         }
 
-        private static string PrepareDate(string currentDate) 
+        private string PrepareDate(string currentDate) 
         {
-            if (currentDate.Split(' ')[1].Count() == 3)
+            DateTime result = DateTime.Now;
+            if (currentDate.Split(' ')[1].Count() >= 3)
             {
-                string[] detectedDate = currentDate.Split(' ');
-                detectedDate[1] = currentDate.Split(' ')[1].ToUpper();
-                currentDate = string.Join(" ", detectedDate);
+                if (currentDate.Split(' ')[2].Count() != 2)
+                {
+                    result = GetDateLongMonthLongYear(currentDate);
+                }
+                else
+                {
+                    result = GetDateLongMonthShortYear(currentDate);
+                }
             }
-            else if (currentDate.Split(' ')[1].Count() > 3)
+            else
             {
-                string[] detectedDate = currentDate.Split(' ');
-                detectedDate[1] = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(currentDate.Split(' ')[1].ToLower());
-                currentDate = string.Join(" ", detectedDate);
+                if (currentDate.Split(' ')[2].Count() != 2)
+                {
+                    result = GetDateShortMonthLongYear(currentDate);
+                }
+                else
+                {
+                    result = GetDateShortMothShortYear(currentDate);
+                }
             }
+            return result.ToString(_outputFormat, CultureInfo.InvariantCulture);
+        }
 
-            return currentDate;
+        private static DateTime GetDateLongMonthLongYear(string currentDate)
+        {
+            DateTime result;
+            if (!DateTime.TryParseExact(currentDate, "d MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                if (DateTime.TryParseExact(currentDate, "dd MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    if (DateTime.TryParseExact(currentDate, "d MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                        DateTime.TryParseExact(currentDate, "dd MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
+            return result;
+        }
+
+        private static DateTime GetDateLongMonthShortYear(string currentDate)
+        {
+            DateTime result;
+            if (!DateTime.TryParseExact(currentDate, "d MMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                if (DateTime.TryParseExact(currentDate, "dd MMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    if (DateTime.TryParseExact(currentDate, "d MMMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                        DateTime.TryParseExact(currentDate, "dd MMMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
+            return result;
+        }
+
+        private static DateTime GetDateShortMonthLongYear(string currentDate)
+        {
+            DateTime result;
+            if (DateTime.TryParseExact(currentDate, "d MM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                DateTime.TryParseExact(currentDate, "dd MM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
+            return result;
+        }
+
+        private static DateTime GetDateShortMothShortYear(string currentDate)
+        {
+            DateTime result;
+            if (DateTime.TryParseExact(currentDate, "d MM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                DateTime.TryParseExact(currentDate, "dd MM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
+            return result;
         }
     }
 }

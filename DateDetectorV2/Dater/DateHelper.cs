@@ -293,7 +293,9 @@ namespace DateDetectorV2.Dater
         public static bool ValidateLongDate(string date)
         {
             return DateTime.TryParseExact(date, "dd MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _) ||
-                DateTime.TryParseExact(date, "dd MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
+                DateTime.TryParseExact(date, "dd MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _) ||
+                DateTime.TryParseExact(date, "d MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _) ||
+                DateTime.TryParseExact(date, "d MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out _);
         }
 
         /// <summary>
