@@ -44,7 +44,7 @@ namespace DateDetectorV2.Dater
         /// <param name="dayArray">Day array.</param>
         /// <param name="monthArray">Month array.</param>
         /// <param name="yearArray">Year array.</param>
-        public static (int, string) GetYearDistance(List<char> dayArray, List<char> monthArray, List<char> yearArray, int cumulativeDistance)
+        public static Tuple<int, string> GetYearDistance(List<char> dayArray, List<char> monthArray, List<char> yearArray, int cumulativeDistance)
         {
             int distance = 0;
             List<char> yearWithDash = new List<char>();
@@ -90,7 +90,7 @@ namespace DateDetectorV2.Dater
                     if (!isDateValid) distance++;
                 }
             }
-            return (distance, new string(yearWithDash.ToArray()));
+            return Tuple.Create(distance, new string(yearWithDash.ToArray()));
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace DateDetectorV2.Dater
         /// <returns>The month distance.</returns>
         /// <param name="dayArray">Day array.</param>
         /// <param name="monthArray">Month array.</param>
-        public static (int, string) GetMonthDistance(List<char> dayArray, List<char> monthArray, int cumulativeDistance)
+        public static Tuple<int, string> GetMonthDistance(List<char> dayArray, List<char> monthArray, int cumulativeDistance)
         {
             int distance = 0;
             List<char> monthWithDash = new List<char>();
@@ -142,7 +142,7 @@ namespace DateDetectorV2.Dater
                 bool isDateValid = DateHelper.ValidateDate(date + ".2000", "dd.mm.yyyy");
                 if (!isDateValid) distance++;
             }
-            return (distance, new string(monthWithDash.ToArray()));
+            return Tuple.Create(distance, new string(monthWithDash.ToArray()));
         }
 
         /// <summary>
@@ -150,7 +150,7 @@ namespace DateDetectorV2.Dater
         /// </summary>
         /// <returns>The day distance.</returns>
         /// <param name="dayArray">Day array.</param>
-        public static (int, string) GetDayDistance(List<char> dayArray)
+        public static Tuple<int, string> GetDayDistance(List<char> dayArray)
         {
             int distance = 0;
             List<char> dayWithDash = new List<char>();
@@ -196,7 +196,7 @@ namespace DateDetectorV2.Dater
                     }
                     break;
             }
-            return (distance, new string(dayWithDash.ToArray()));
+            return Tuple.Create(distance, new string(dayWithDash.ToArray()));
         }
 
         /// <summary>
@@ -209,7 +209,7 @@ namespace DateDetectorV2.Dater
         /// delimiter symbols, array with digits from year representation</returns>
         /// <param name="formatArray">Format array.</param>
         /// <param name="valueArray">Value array.</param>
-        public static (int, List<char>, List<char>, List<char>) GetSymbolDistanceDayMonthYearArrays(char[] formatArray, char[] valueArray)
+        public static Tuple<int, List<char>, List<char>, List<char>> GetSymbolDistanceDayMonthYearArrays(char[] formatArray, char[] valueArray)
         {
             List<char> monthArray = new List<char>();
             List<char> dayArray = new List<char>();
@@ -235,7 +235,7 @@ namespace DateDetectorV2.Dater
                         break;
                 }
             }
-            return (distance, dayArray, monthArray, yearArray);
+            return Tuple.Create(distance, dayArray, monthArray, yearArray);
         }
 
         /// <summary>

@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json.Linq;
 
 namespace DateDetectorV2.Dater
 {
@@ -44,7 +42,7 @@ namespace DateDetectorV2.Dater
             return string.Join("", chars);
         }
 
-        internal (string, float) GetSupposedValue(List<string> valueToDetec)
+        internal Tuple<string, float> GetSupposedValue(List<string> valueToDetec)
         {
             if (string.IsNullOrEmpty(valueToDetec[2]))
             {
@@ -54,7 +52,7 @@ namespace DateDetectorV2.Dater
 
             string currentDate = string.Join(" ", valueToDetec);
             if (!currentDate.Contains("_")) {
-                return (PrepareDate(currentDate), 1f);
+                return Tuple.Create(PrepareDate(currentDate), 1f);
             }
 
             float accuracy = 0;
@@ -106,16 +104,15 @@ namespace DateDetectorV2.Dater
                     if (DateIsValis(currentDate))
                     {
                         accuracy = CalculateAccuracy(currentDate, leetUnderscores, simpleUnderscores);
-                        return (PrepareDate(currentDate), accuracy);
+                        return Tuple.Create(PrepareDate(currentDate), accuracy);
                     }
                 }
             }
 
-            (currentDate, accuracy) = GetSupposedValueWithoutLeet(valueToDetec);
-            return (currentDate, accuracy);
+            return GetSupposedValueWithoutLeet(valueToDetec);
         }
 
-        private (string currentDate, float accuracy) GetSupposedValueWithoutLeet(List<string> valueToDetec)
+        private Tuple<string, float> GetSupposedValueWithoutLeet(List<string> valueToDetec)
         {
             float accuracy = 0;
             List<string> months = valueToDetec[1].Split(',').ToList();
@@ -150,11 +147,11 @@ namespace DateDetectorV2.Dater
                     if (DateIsValis(currentDate))
                     {
                         accuracy = CalculateAccuracy(currentDate, 0, simpleUnderscores);
-                        return (PrepareDate(currentDate), accuracy);
+                        return Tuple.Create(PrepareDate(currentDate), accuracy);
                     }
                 }
             }
-            return (DateTime.Now.ToString(_outputFormat, CultureInfo.InvariantCulture), 0f);
+            return Tuple.Create(DateTime.Now.ToString(_outputFormat, CultureInfo.InvariantCulture), 0f);
         }
 
         private List<ISet<string>> CalculatePossibleLetters(List<ISet<string>> possibleLetters, string month, int i)
