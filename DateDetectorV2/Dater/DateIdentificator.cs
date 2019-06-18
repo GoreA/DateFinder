@@ -16,14 +16,14 @@ namespace DateDetectorV2.Dater
         public string LETTERS = string.Empty;
         private string _outputFormat;
 
-        public DateIdentificator (string pathForMonths, string outputFormat) 
+        public DateIdentificator (List<string> months, string outputFormat) 
         {
-            if (string.IsNullOrEmpty(pathForMonths))
+            if ((months != null) && (!months.Any()))
             {
-                throw new System.ArgumentException("PathForMonths parameter cannot be null or empty", pathForMonths);
+                throw new System.ArgumentException("Months list parameter cannot be null or empty");
             }
             else
-                LETTERS = GetLettersFromDeclaredMonths(pathForMonths);
+                LETTERS = GetLettersFromDeclaredMonths(months);
 
             if (string.IsNullOrEmpty(outputFormat))
             {
@@ -33,17 +33,14 @@ namespace DateDetectorV2.Dater
                 _outputFormat = outputFormat;
         }
 
-        private string GetLettersFromDeclaredMonths(string path)
+        private string GetLettersFromDeclaredMonths(List<string> months)
         {
             HashSet<char> chars = new HashSet<char>();
-            using (StreamReader reader = new StreamReader(path))
+            foreach (string month in months)
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
-                {
-                    chars.UnionWith(line.ToCharArray());
-                }
+                chars.UnionWith(month.ToCharArray());
             }
+
             return string.Join("", chars);
         }
 

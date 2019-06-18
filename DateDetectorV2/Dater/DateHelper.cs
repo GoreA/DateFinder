@@ -18,24 +18,20 @@ namespace DateDetectorV2.Dater
         /// </summary>
         /// <returns>The length months dictionary.</returns>
         /// <param name="path">Path.</param>
-        public static Dictionary<int, HashSet<string>> GetLengthMonthsDictionary(string path)
+        public static Dictionary<int, HashSet<string>> GetLengthMonthsDictionary(List<string> months)
         {
             Dictionary<int, HashSet<string>> monthsDictionary = new Dictionary<int, HashSet<string>>();
-            using (StreamReader reader = new StreamReader(path))
+            foreach (string month in months)
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                if (monthsDictionary.ContainsKey(month.Trim().Length))
                 {
-                    if (monthsDictionary.ContainsKey(line.Trim().Length))
-                    {
-                        HashSet<string> setOfMonths;
-                        monthsDictionary.TryGetValue(line.Trim().Length, out setOfMonths);
-                        setOfMonths.Add(line.Trim());
-                    }
-                    else
-                    {
-                        monthsDictionary.Add(line.Trim().Length, new HashSet<string>(new string[] { line.Trim() }));
-                    }
+                    HashSet<string> setOfMonths;
+                    monthsDictionary.TryGetValue(month.Trim().Length, out setOfMonths);
+                    setOfMonths.Add(month.Trim());
+                }
+                else
+                {
+                    monthsDictionary.Add(month.Trim().Length, new HashSet<string>(new string[] { month.Trim() }));
                 }
             }
             return monthsDictionary;

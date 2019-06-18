@@ -13,10 +13,15 @@ namespace DateDetectorV2
         public static void Main(string[] args)
         {
             var currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var pathToFormats = Path.Combine(currentDirectory, @"Resources/Formats.txt");
+            List<string> formats = new List<string>(new string[] { "dd MMM yyyy", "dd MMM yy", "dd MM yy",
+                        "d MMM yyyy", "d MMM yy", "dd/MM/yyyy", "dd-MMM-yyyy", "dd MMMM yyyy", "yyyy-MM-dd", 
+                        "d MMMM yyyy", "dd/MM/yy", "dd MMM", "ddMMM"});
+            List<string> months = new List<string>(new string[] { "January", "February", "March", "April",
+                        "May", "Jun", "July", "August", "September", "October", "November", "December", 
+                        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", 
+                        "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" });
             var pathToTestFile = Path.Combine(currentDirectory, @"Resources/A_tale_of_two_cities.txt");
-            var pathForMonths = Path.Combine(currentDirectory, @"Resources/Months.txt");
-            Dictionary<int, HashSet<string>> monthsDictionary = DateHelper.GetLengthMonthsDictionary(pathForMonths);
+            Dictionary<int, HashSet<string>> monthsDictionary = DateHelper.GetLengthMonthsDictionary(formats);
 
             using (StreamReader reader = new StreamReader(pathToTestFile))
             {
@@ -27,13 +32,12 @@ namespace DateDetectorV2
                     sb.AppendLine(line);
                 }
                 long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-                DateFinder df = new DateFinder(sb.ToString(), pathToFormats, pathForMonths, 2, "dd/MMM/yyyy");
+                DateFinder df = new DateFinder(sb.ToString(), formats, months, 2, "dd/MMM/yyyy");
                 // Main method
-                Console.WriteLine(df.DetectDate());
+                Console.WriteLine(df.DetectJSONDates());
                 long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 Console.WriteLine((end - start) / 1000);
             }
-
         }
     }
 }
