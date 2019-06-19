@@ -442,8 +442,8 @@ namespace DateDetectorV2.Dater
 
                 Tuple<int, List<char>, List<char>, List<char>> distance_dayArray_monthArray_yearArray = DateHelper.GetSymbolDistanceDayMonthYearArrays(formatArray, valueArray);
                 distanceDMMM = distance_dayArray_monthArray_yearArray.Item1;
-                List<char> monthArray = distance_dayArray_monthArray_yearArray.Item2;
-                List<char> dayArray = distance_dayArray_monthArray_yearArray.Item3;
+                List<char> dayArray = distance_dayArray_monthArray_yearArray.Item2;
+                List<char> monthArray = distance_dayArray_monthArray_yearArray.Item3;
                 List<char> yearArray = distance_dayArray_monthArray_yearArray.Item4;
 
                 dayWithDash = new string(dayArray.ToArray());
