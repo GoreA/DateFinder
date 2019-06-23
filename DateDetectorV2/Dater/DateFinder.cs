@@ -82,14 +82,13 @@ namespace DateDetectorV2.Dater
             List<DateResult> dateResults = new List<DateResult>();
             foreach (KeyValuePair<string, HashSet<string>> wordRegexFormats in wordRegexes)
             {
-                dateResults.AddRange(GetDateResults(wordRegexFormats.Key, wordRegexFormats.Value));
+                dateResults = GetDateResults(dateResults, wordRegexFormats.Key, wordRegexFormats.Value);
             }
             return dateResults;
         }
 
-        private IEnumerable<DateResult> GetDateResults(string stringRegEx, IEnumerable<string> formats)
+        private List<DateResult> GetDateResults(List<DateResult> dateResults, string stringRegEx, IEnumerable<string> formats)
         {
-            List<DateResult> dateResults = new List<DateResult>();
             Regex regex = new Regex(@stringRegEx);
             MatchCollection matchCollection = regex.Matches(_stringToScan);
             foreach (Match match in matchCollection)
@@ -531,7 +530,8 @@ namespace DateDetectorV2.Dater
                 {
                     if (kvp.Value == 0)
                         primaryDt.Status = Status.OK;
-                    primaryDt.Format.Add(kvp.Key, kvp.Value);
+                    if(!primaryDt.Format.ContainsKey(kvp.Key))
+                        primaryDt.Format.Add(kvp.Key, kvp.Value);
                 }
             }
             else

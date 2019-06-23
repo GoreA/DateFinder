@@ -67,13 +67,7 @@ namespace DateDetectorV2.Dater
                 }
                 else
                 {
-                    yearWithDash.Add(yearArray[0]);
-                    if (!DIGITS.Contains(yearArray[0].ToString()) || yearArray[0] == '0')
-                    {
-                        distance++;
-                        yearWithDash.Add('_');
-                    }
-                    for (int i = 1; i < yearArray.Count; i++)
+                    for (int i = 0; i < yearArray.Count; i++)
                     {
                         yearWithDash.Add(yearArray[i]);
                         if (!DIGITS.Contains(yearArray[i].ToString()))
@@ -87,7 +81,13 @@ namespace DateDetectorV2.Dater
                 {
                     string date = BuildDate(dayArray, monthArray, yearArray);
                     bool isDateValid = ValidateDate(date, "dd.mm.yyyy");
-                    if (!isDateValid) distance++;
+                    if (!isDateValid)
+                    {
+                        string longDate = DateHelper.BuildLongDate(dayArray, monthArray);
+                        bool isLongDateValid = DateHelper.ValidateLongDate(longDate + " 2000");
+                        if (!isLongDateValid)
+                            distance++;
+                    }
                 }
             }
             return Tuple.Create(distance, new string(yearWithDash.ToArray()));
@@ -140,7 +140,13 @@ namespace DateDetectorV2.Dater
             {
                 string date = DateHelper.BuildDate(dayArray, monthArray);
                 bool isDateValid = DateHelper.ValidateDate(date + ".2000", "dd.mm.yyyy");
-                if (!isDateValid) distance++;
+                if (!isDateValid)
+                {
+                    string longDate = DateHelper.BuildLongDate(dayArray, monthArray);
+                    bool isLongDateValid = DateHelper.ValidateLongDate(date + " 2000");
+                    if(!isLongDateValid)
+                        distance++;
+                }
             }
             return Tuple.Create(distance, new string(monthWithDash.ToArray()));
         }

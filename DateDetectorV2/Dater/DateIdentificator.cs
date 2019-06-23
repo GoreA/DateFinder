@@ -248,8 +248,8 @@ namespace DateDetectorV2.Dater
         {
             DateTime result;
             if (!DateTime.TryParseExact(currentDate, "d MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
-                if (DateTime.TryParseExact(currentDate, "dd MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
-                    if (DateTime.TryParseExact(currentDate, "d MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                if (!DateTime.TryParseExact(currentDate, "dd MMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    if (!DateTime.TryParseExact(currentDate, "d MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
                         DateTime.TryParseExact(currentDate, "dd MMMM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
             return result;
         }
@@ -258,8 +258,8 @@ namespace DateDetectorV2.Dater
         {
             DateTime result;
             if (!DateTime.TryParseExact(currentDate, "d MMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
-                if (DateTime.TryParseExact(currentDate, "dd MMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
-                    if (DateTime.TryParseExact(currentDate, "d MMMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                if (!DateTime.TryParseExact(currentDate, "dd MMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+                    if (!DateTime.TryParseExact(currentDate, "d MMMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
                         DateTime.TryParseExact(currentDate, "dd MMMM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
             return result;
         }
@@ -267,7 +267,7 @@ namespace DateDetectorV2.Dater
         private static DateTime GetDateShortMonthLongYear(string currentDate)
         {
             DateTime result;
-            if (DateTime.TryParseExact(currentDate, "d MM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+            if (!DateTime.TryParseExact(currentDate, "d MM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
                 DateTime.TryParseExact(currentDate, "dd MM yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
             return result;
         }
@@ -275,7 +275,7 @@ namespace DateDetectorV2.Dater
         private static DateTime GetDateShortMothShortYear(string currentDate)
         {
             DateTime result;
-            if (DateTime.TryParseExact(currentDate, "d MM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
+            if (!DateTime.TryParseExact(currentDate, "d MM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result))
                 DateTime.TryParseExact(currentDate, "dd MM yy", CultureInfo.InvariantCulture, DateTimeStyles.None, out result);
             return result;
         }
