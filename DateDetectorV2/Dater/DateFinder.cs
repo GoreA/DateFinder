@@ -348,14 +348,15 @@ namespace DateDetectorV2.Dater
             int distance = 0;
             List<string> supposedValue = new List<string>();
 
+            int formatMonthLength = format.Split('M').Length - 1;
             string newFormat = format;
-            int monthLength = value.Length - format.Length + 3;
+            int monthLength = value.Length - format.Length + formatMonthLength;
             if (_monthsDictionary.ContainsKey(monthLength))
             {
                 string monthWithDash = string.Empty;
                 Regex mRegex = new Regex("[mM]");
                 Match match = mRegex.Match(format);
-                int monthFormatPadding = monthLength - 3;
+                int monthFormatPadding = monthLength - formatMonthLength;
                 for (int i = 0; i < monthFormatPadding; i++)
                 {
                     newFormat = newFormat.Insert(match.Index + i + 1, "m");
@@ -423,7 +424,8 @@ namespace DateDetectorV2.Dater
             int distanceDMMM = 0;
             List<string> supposedValue = new List<string>();
             string newFormat = format;
-            int monthLength = value.Length - format.Length + 3;
+            int formatMonthLength = format.Split('M').Length - 1; 
+            int monthLength = value.Length - format.Length + formatMonthLength;
             if (_monthsDictionary.ContainsKey(monthLength))
             {
                 string dayWithDash = string.Empty;
@@ -431,7 +433,7 @@ namespace DateDetectorV2.Dater
                 string yearWithDash = string.Empty;
                 Regex mRegex = new Regex("[mM]");
                 Match match = mRegex.Match(format);
-                int monthFormatPadding = monthLength - 3;
+                int monthFormatPadding = monthLength - formatMonthLength;
                 for (int i = 0; i < monthFormatPadding; i++)
                 {
                     newFormat = newFormat.Insert(match.Index + i + 1, "m");

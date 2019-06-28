@@ -14,8 +14,8 @@ namespace DateDetectorV2
         {
             var currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             List<string> formats = new List<string>(new string[] { "dd MMM yyyy", "dd MMM yy", "dd MM yy",
-                        "d MMM yyyy", "d MMM yy", "dd/MM/yyyy", "dd-MMM-yyyy", "dd MMMM yyyy", "yyyy-MM-dd", 
-                        "d MMMM yyyy", "dd/MM/yy", "dd MMM", "ddMMM"});
+                        "d MMM yyyy", "d MMM yy", "dd/MM/yyyy", "dd-MMM-yyyy", "yyyy-MM-dd", 
+                        "dd/MM/yy", "dd MMM", "ddMMM"});
             List<string> months = new List<string>(new string[] { "January", "February", "March", "April",
                         "May", "Jun", "July", "August", "September", "October", "November", "December", 
                         "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", 
