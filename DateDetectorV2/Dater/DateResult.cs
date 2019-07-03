@@ -40,10 +40,13 @@ namespace DateDetectorV2.Dater
             }
         }
 
-        // TODO
         public override int GetHashCode()
         {
-            return base.GetHashCode();
+            var hashCode = 33288;
+            hashCode = hashCode * OriginalValue.GetHashCode();
+            hashCode = hashCode * StartIndex;
+            hashCode = hashCode * EndIndex;
+            return hashCode;
         }
     }
 }
