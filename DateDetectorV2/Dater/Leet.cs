@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -7,6 +6,11 @@ namespace DateDetectorV2.Dater
 {
     public class Leet
     {
+        /// <summary>
+        /// Scans the document from given path to extract Leet pairs.
+        /// </summary>
+        /// <param name="path">the path of document from which can be taken Leet. For more details please visit https://en.wikipedia.org/wiki/Leet </param>
+        /// <returns>a dictionary that contains letters/digits as key values and possible values to replace to make the date valid</returns>
         public static Dictionary<string, HashSet<string>> GetLengthMonthsDictionary(string path)
         {
             Dictionary<string, HashSet<string>> leetDictionary = new Dictionary<string, HashSet<string>>();
